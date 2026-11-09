@@ -1,0 +1,95 @@
+*{
+    font-family: Verdana, Geneva, Tahoma, sans-serif
+
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+main{
+    width: 80vw;
+    height: 80vh;
+    background-color:  linear-gradient(to right, #1e3c72, #2a5298);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    color: white;
+}
+section{
+    width: 100%;
+    height: 100%;
+}
+section.populated{
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    overflow:scroll
+}
+
+.startter-text{
+    padding: 0 80px;
+
+}
+
+form{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    border-top: 1px solid white;
+    padding-top: 20px;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+}
+
+input.question-box{
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    border: none;
+}
+
+input[type=submit]{
+    width: 100px;
+    background-color: #1e3c72;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+input:focus{
+    outline: none;
+}
+
+.bubble{
+    margin: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
+
+.loader {
+    margin: 10px;
+    width: 60px;
+    aspect-ratio: 4;
+    background: linear-gradient(to right, #1e3c72, #2a5298);
+    animation: loading
+}
+@keyframes loading {
+    33% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 100% 0;
+    }
+    66%
+}
