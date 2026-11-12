@@ -1,14 +1,20 @@
-import "./global.css"
 
-export const metadata = {
-    title:"F1OLLAMA",
-    description: "Using an LLM to get lastest news about F1 "
-}
+import type { Metadata } from 'next';
+import './global.css';
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+export const metadata: Metadata = {
+    title: 'F1OLLAMA',
+    description: 'Using an LLM to get the latest news about F1',
+};
+
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
     return (
         <html lang="en">
             <body>{children}</body>
         </html>
-    )
+    );
 }

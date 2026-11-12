@@ -1,95 +1,261 @@
-*{
-    font-family: Verdana, Geneva, Tahoma, sans-serif
 
+/* =========================
+   Configurações gerais
+========================= */
+
+* {
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-body{
+:root {
+    --background: #0b1120;
+    --surface: #151e2e;
+    --surface-light: #202c40;
+    --primary: #d71920;
+    --primary-hover: #b9151b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+}
+
+body {
     margin: 0;
-    padding: 0;
+    padding: 24px;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    background: var(--background);
+    color: var(--text);
 }
-main{
+
+/* =========================
+   Container principal
+========================= */
+
+main {
     width: 80vw;
-    height: 80vh;
-    background-color:  linear-gradient(to right, #1e3c72, #2a5298);
-    border-radius: 15px;
+    max-width: 1000px;
+    height: 85vh;
+    min-height: 500px;
+    background: linear-gradient(145deg, #172338, #101827);
+    border: 1px solid var(--border);
+    border-radius: 18px;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     flex-direction: column;
-    color: white;
-}
-section{
-    width: 100%;
-    height: 100%;
-}
-section.populated{
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
-    overflow:scroll
-}
-
-.startter-text{
-    padding: 0 80px;
-
-}
-
-form{
-    height: 50px;
-    width: 100%;
-    display: flex;
-    border-top: 1px solid white;
-    padding-top: 20px;
-    border-radius: 0 0 15px 15px;
     overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
-input.question-box{
+/* =========================
+   Área das mensagens
+========================= */
+
+section {
     width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    color: #333;
-    border: none;
+    flex: 1;
+    min-height: 0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-input[type=submit]{
-    width: 100px;
-    background-color: #1e3c72;
-    color: white;
-    border: none;
-    cursor: pointer;
+section.populated {
+    justify-content: flex-end;
+    align-items: stretch;
+    overflow-y: auto;
+    gap: 12px;
 }
 
-input:focus{
-    outline: none;
+/* Barra de rolagem */
+
+section.populated::-webkit-scrollbar {
+    width: 7px;
 }
 
-.bubble{
-    margin: 8px;
-    padding: 10px;
+section.populated::-webkit-scrollbar-thumb {
+    background: var(--border);
     border-radius: 10px;
-    color: white;
 }
 
+/* =========================
+   Texto inicial
+========================= */
+
+.starter-text {
+    padding: 0 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+/* =========================
+   Formulário
+========================= */
+
+form {
+    width: 100%;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+input.question-box {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+input.question-box::placeholder {
+    color: var(--text-muted);
+}
+
+input:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}
+
+input[type="submit"],
+form button {
+    min-width: 90px;
+    padding: 14px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+input[type="submit"]:hover,
+form button:hover {
+    background: var(--primary-hover);
+}
+
+form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================
+   Balões de conversa
+========================= */
+
+.bubble {
+    max-width: 80%;
+    width: fit-content;
+    margin: 4px 0;
+    padding: 14px 18px;
+    border-radius: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.bubble p {
+    margin: 0;
+}
+
+.bubble.user {
+    align-self: flex-end;
+    background: #263a59;
+    border-bottom-right-radius: 4px;
+}
+
+.bubble.assistant {
+    align-self: flex-start;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+}
+
+/* =========================
+   Indicador de carregamento
+========================= */
 
 .loader {
-    margin: 10px;
+    margin: 10px 0;
     width: 60px;
-    aspect-ratio: 4;
-    background: linear-gradient(to right, #1e3c72, #2a5298);
-    animation: loading
+    height: 12px;
+    border-radius: 10px;
+    background: linear-gradient(
+        90deg,
+        #334155 25%,
+        #64748b 50%,
+        #334155 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.4s infinite linear;
 }
+
 @keyframes loading {
-    33% {
-        background-position: 0 0;
-    }
-    50% {
+    0% {
         background-position: 100% 0;
     }
-    66%
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+/* =========================
+   Responsividade
+========================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    main {
+        width: 100%;
+        height: 92vh;
+        min-height: 400px;
+    }
+
+    section {
+        padding: 16px;
+    }
+
+    .starter-text {
+        font-size: 20px;
+    }
+
+    .bubble {
+        max-width: 92%;
+    }
+
+    form {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    input.question-box {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    input[type="submit"],
+    form button {
+        min-width: 65px;
+        padding: 12px;
+    }
 }

@@ -1,15 +1,35 @@
 
 'use client';
 
-import { useChat } from "@ai-sdk/react";
+import { useState } from 'react';
+import type { SyntheticEvent } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { TextStreamChatTransport } from 'ai';
+
 import PromptSuggestionRow from './components/PrompSuggestionRow';
 import LoadingBubble from './components/LoadingBubble';
 import Bubble from './components/Bubble';
 
 const Home = () => {
-    const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+    const [input, setInput] = useState('');
+
+    const { messages, sendMessage, status } = useChat({
+        transport: new TextStreamChatTransport({
+            api: '/api/ollama',
+        }),
+    });
 
     const noMessages = messages.length === 0;
+    const isLoading = status === 'submitted' || status === 'streaming';
+
+    const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!input.trim() || isLoading) return;
+
+    sendMessage({ text: input });
+    setInput('');
+};
 
     return (
         <main>
@@ -17,19 +37,21 @@ const Home = () => {
                 {noMessages ? (
                     <>
                         <p className="starter-text">
-                            Ask me anything about F1 and I will answer you with the latest news about it!
+                            Ask me anything about F1!
                         </p>
+
                         <br />
-                        <PromptSuggestionRow />
+
+                        <PromptSuggestionRow
+    onSelect={(prompt) => sendMessage({ text: prompt })}
+/>
                     </>
                 ) : (
                     <>
-                        {messages.map((message, index) => (
-                            <Bubble
-                                key={`message-${index}`}
-                                message={message}
-                            />
+                        {messages.map((message) => (
+                            <Bubble key={message.id} message={message} />
                         ))}
+
                         {isLoading && <LoadingBubble />}
                     </>
                 )}
@@ -38,11 +60,14 @@ const Home = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     className="question-box"
-                    onChange={handleInputChange}
                     value={input}
+                    onChange={(event) => setInput(event.target.value)}
                     placeholder="Ask me anything about F1..."
                 />
-                <input type="submit" />
+
+                <button type="submit" disabled={isLoading || !input.trim()}>
+                    Send
+                </button>
             </form>
         </main>
     );

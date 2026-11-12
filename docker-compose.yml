@@ -20,7 +20,8 @@ services:
       timeout: 5s
       retries: 20
 
-  ollama-pull:
+ 
+  ollama-pull-embeddings:
     image: ollama/ollama
     depends_on:
       ollama:
@@ -29,6 +30,17 @@ services:
       - OLLAMA_HOST=ollama:11434
     entrypoint: ["ollama", "pull", "mxbai-embed-large"]
     restart: "no"
+
+  ollama-pull-llm:
+    image: ollama/ollama
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    entrypoint: ["ollama", "pull", "qwen2.5:7b"]
+    restart: "no"
+
 
 volumes:
   qdrant_data:
