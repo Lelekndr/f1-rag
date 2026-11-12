@@ -52,7 +52,7 @@ const Home = () => {
                             <Bubble key={message.id} message={message} />
                         ))}
 
-                        {isLoading && <LoadingBubble />}
+                        {status === 'submitted' && <LoadingBubble />}
                     </>
                 )}
             </section>

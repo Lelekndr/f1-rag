@@ -1,13 +1,27 @@
-
-import { ChatOllama } from "@langchain/ollama";
+import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
+import { QdrantVectorStore } from "@langchain/qdrant";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import type { UIMessage } from "ai";
+
 
 const model = new ChatOllama({
     model: "qwen2.5:7b",
     baseUrl: "http://127.0.0.1:11434",
     temperature: 0,
 });
+
+const embeddings = new OllamaEmbeddings({
+    model: process.env.OLLAMA_EMBEDDING_MODEL!,
+    baseUrl: process.env.OLLAMA_BASE_URL!,
+});
+
+const vectorStore = await QdrantVectorStore.fromExistingCollection(
+    embeddings,
+    {
+        url: process.env.QDRANT_URL!,
+        collectionName: process.env.QDRANT_COLLECTION!,
+    }
+);
 
 export async function POST(req: Request) {
     try {
