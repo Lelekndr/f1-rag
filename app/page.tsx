@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -13,7 +12,7 @@ import Bubble from './components/Bubble';
 const Home = () => {
     const [input, setInput] = useState('');
 
-    const { messages, sendMessage, status } = useChat({
+    const { messages, sendMessage, status, error } = useChat({
         transport: new TextStreamChatTransport({
             api: '/api/ollama',
         }),
@@ -23,13 +22,13 @@ const Home = () => {
     const isLoading = status === 'submitted' || status === 'streaming';
 
     const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
+        event.preventDefault();
 
-    if (!input.trim() || isLoading) return;
+        if (!input.trim() || isLoading) return;
 
-    sendMessage({ text: input });
-    setInput('');
-};
+        sendMessage({ text: input });
+        setInput('');
+    };
 
     return (
         <main>
@@ -37,14 +36,16 @@ const Home = () => {
                 {noMessages ? (
                     <>
                         <p className="starter-text">
-                            Ask me anything about F1!
+                            Pergunte qualquer coisa sobre F1!
                         </p>
 
                         <br />
 
                         <PromptSuggestionRow
-    onSelect={(prompt) => sendMessage({ text: prompt })}
-/>
+                            onSelect={(prompt) => {
+                                if (!isLoading) sendMessage({ text: prompt });
+                            }}
+                        />
                     </>
                 ) : (
                     <>
@@ -55,6 +56,12 @@ const Home = () => {
                         {status === 'submitted' && <LoadingBubble />}
                     </>
                 )}
+
+                {error && (
+                    <p className="starter-text">
+                        Erro ao responder. Verifique se o Ollama e o Qdrant estão no ar.
+                    </p>
+                )}
             </section>
 
             <form onSubmit={handleSubmit}>
@@ -62,11 +69,11 @@ const Home = () => {
                     className="question-box"
                     value={input}
                     onChange={(event) => setInput(event.target.value)}
-                    placeholder="Ask me anything about F1..."
+                    placeholder="Pergunte qualquer coisa sobre F1..."
                 />
 
                 <button type="submit" disabled={isLoading || !input.trim()}>
-                    Send
+                    Enviar
                 </button>
             </form>
         </main>

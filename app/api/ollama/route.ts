@@ -31,33 +31,55 @@ const textOf = (message: UIMessage) =>
         .map((part) => part.text)
         .join("\n");
 
+const rewriteQuestion = async (messages: UIMessage[], question: string) => {
+    if (messages.length <= 1) return question;
+
+    const transcript = messages
+        .slice(-7, -1)
+        .map(
+            (m) =>
+                `${m.role === "user" ? "Usuário" : "Assistente"}: ${textOf(m).slice(0, 300)}`
+        )
+        .join("\n");
+
+    const res = await model.invoke([
+        new SystemMessage(
+            "Reescreva a última pergunta do usuário como uma pergunta completa e independente, usando a conversa como contexto. Responda APENAS com a pergunta reescrita."
+        ),
+        new HumanMessage(`Conversa:\n${transcript}\n\nÚltima pergunta: ${question}`),
+    ]);
+
+    return typeof res.content === "string" && res.content.trim()
+        ? res.content.trim()
+        : question;
+};
+
 export async function POST(req: Request) {
     try {
         const { messages }: { messages: UIMessage[] } = await req.json();
 
-        
         const lastUser = [...messages].reverse().find((m) => m.role === "user");
         const question = lastUser ? textOf(lastUser) : "";
 
-       
         const vectorStore = await getVectorStore();
-        const docs = await vectorStore.similaritySearch(question, 4);
+        const searchQuery = await rewriteQuestion(messages, question);
+        const docs = await vectorStore.similaritySearch(searchQuery, 6);
 
         const context = docs
             .map((doc, i) => `[${i + 1}] (fonte: ${doc.metadata.source})\n${doc.pageContent}`)
             .join("\n\n");
 
-        
         const system = new SystemMessage(
             `Você é um assistente especialista em Fórmula 1.
-Responda usando APENAS o contexto abaixo. Se a resposta não estiver no contexto, diga que não encontrou essa informação nas fontes.
-Responda no mesmo idioma da pergunta.
+Responda em português, direto ao ponto, usando SOMENTE o contexto abaixo. Não use conhecimento próprio.
+O contexto pode estar em inglês ou ser uma lista de nomes sem frases completas (por exemplo "Charles Leclerc Ferrari Lewis Hamilton Ferrari" significa que os pilotos da Ferrari são Leclerc e Hamilton). Nesse caso, extraia a resposta da lista.
+Se a informação não aparecer no contexto, responda exatamente: "Não encontrei essa informação nas fontes."
+Não mencione a palavra "contexto" na resposta.
 
 CONTEXTO:
 ${context}`
         );
 
-        
         const history = messages
             .map((message) => {
                 const content = textOf(message);
